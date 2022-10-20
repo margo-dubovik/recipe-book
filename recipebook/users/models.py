@@ -17,7 +17,13 @@ class BotUser(models.Model):
     last_name = models.CharField(max_length=256)
     state = models.IntegerField()
 
-    gender = models.CharField(max_length=50)
+    role_choices = (
+        ('f', 'Female'),
+        ('m', 'Male'),
+        ('o', 'Other'),
+    )
+
+    gender = models.CharField(max_length=1, choices=role_choices)
 
     def __str__(self):
         return self.username
