@@ -1,0 +1,16 @@
+{% extends 'admin_panel/base.html' %}
+{% block body %}
+{% if request.user.is_authenticated %}
+<div class="container">
+    <ul>
+        <li><a href="{% url 'bot-users' %}">Bot Users list</a></li>
+        <li><a href="#">New Recipe</a></li>
+    </ul>
+</div>
+{% else %}
+<div class="container">
+    <h1>Welcome to RecipeBook admin panel!</h1>
+    <h2>Please, log in</h2>
+</div>
+{% endif %}
+{% endblock %}

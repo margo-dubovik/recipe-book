@@ -17,13 +17,16 @@ class BotUser(models.Model):
     last_name = models.CharField(max_length=256)
     state = models.IntegerField()
 
-    role_choices = (
+    gender_choices = (
         ('f', 'Female'),
         ('m', 'Male'),
         ('o', 'Other'),
     )
 
-    gender = models.CharField(max_length=1, choices=role_choices)
+    gender = models.CharField(max_length=1, choices=gender_choices)
 
     def __str__(self):
         return self.username
+
+    def gender_verbose(self):
+        return dict(BotUser.gender_choices)[self.gender]
