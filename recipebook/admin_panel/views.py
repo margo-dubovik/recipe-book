@@ -15,7 +15,7 @@ def homeview(request):
     return render(request, 'admin_panel/admin_panel_home.html')
 
 
-class BotUsersList(LoginRequiredMixin, TemplateView):
+class BotUsers(LoginRequiredMixin, TemplateView):
     template_name = 'admin_panel/bot_users_table.html'
 
     def get_context_data(self, **kwargs):
