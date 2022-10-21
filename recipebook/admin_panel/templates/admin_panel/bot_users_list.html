@@ -1,6 +1,7 @@
 {% extends 'admin_panel/base.html' %}
 {% block body %}
 <div class="container">
+  <a href="{% url 'home-view' %}" class="btn btn-outline-dark">Back</a>
   <h4>Bot Users:</h4>
     <ul class="list-group">
       {% for user in bot_users %}
