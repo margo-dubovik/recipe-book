@@ -1,11 +1,21 @@
 {% extends 'admin_panel/base.html' %}
 {% block body %}
 {% if request.user.is_authenticated %}
-<div class="container">
-    <ul>
-        <li><a href="{% url 'bot-users' %}">Bot Users list</a></li>
-        <li><a href="{% url 'recipes' %}">Recipes</a></li>
-    </ul>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card text-white bg-dark">
+            <div class="card-body text-center">
+                <a href="{% url 'bot-users' %}" class="link-light text-decoration-none"><h2>Bot Users list</h2></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card text-white bg-dark">
+            <div class="card-body text-center">
+                <a href="{% url 'recipes' %}" class="link-light text-decoration-none"><h2>Recipes</h2></a>
+            </div>
+        </div>
+    </div>
 </div>
 {% else %}
 <div class="container">
