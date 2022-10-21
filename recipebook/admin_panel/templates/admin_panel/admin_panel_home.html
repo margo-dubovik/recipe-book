@@ -20,7 +20,7 @@
 {% else %}
 <div class="container">
     <h1>Welcome to RecipeBook admin panel!</h1>
-    <h2>Please, log in</h2>
+    <h2>Please, <a href="{% url 'login' %}" class="btn btn-dark"> Log in </a></h2>
 </div>
 {% endif %}
 {% endblock %}

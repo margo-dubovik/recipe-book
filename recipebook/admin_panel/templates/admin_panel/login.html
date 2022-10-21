@@ -1,0 +1,10 @@
+{% extends 'admin_panel/base.html' %}
+{% block body %}
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-outline-dark">Log in</button>
+    </form>
+</div>
+{% endblock %}

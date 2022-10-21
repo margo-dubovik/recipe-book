@@ -125,4 +125,6 @@ MEDIA_ROOT = BASE_DIR / 'recipebook/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+# Redirect after login/logout
+LOGIN_REDIRECT_URL = 'home-view'
+LOGOUT_REDIRECT_URL = 'home-view'
