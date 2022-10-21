@@ -7,4 +7,5 @@ urlpatterns = [
         path('admin-panel/recipes', views.RecipesList.as_view(), name='recipes'),
         path('admin-panel/recipes/new', views.NewRecipe.as_view(), name='new-recipe'),
         path('admin-panel/recipes/<int:recipe_id>/edit', views.EditRecipe.as_view(), name='edit-recipe'),
+        path('admin-panel/recipes/<int:recipe_id>/delete', views.DeleteRecipe.as_view(), name='delete-recipe'),
 ]

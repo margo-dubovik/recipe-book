@@ -68,3 +68,15 @@ class EditRecipe(View):
         return render(request, self.template_name, {'form': form})
 
 
+class DeleteRecipe(View):
+
+    def post(self, request, recipe_id):
+        recipe = get_object_or_404(Recipe, pk=recipe_id)
+        if recipe.photo:
+            recipe.photo.delete()
+        recipe.delete()
+        messages.success(request, "Recipe is deleted")
+        return redirect(reverse('recipes'))
+
+
+
