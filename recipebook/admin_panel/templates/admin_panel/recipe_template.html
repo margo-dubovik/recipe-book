@@ -1,0 +1,13 @@
+{% extends 'admin_panel/base.html' %}
+{% block body %}
+<div class="container">
+    {% if form %}
+    <form method="post" enctype='multipart/form-data'>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-outline-dark" type="submit">{{ button_text }}</button>
+    </form>
+    {% endif %}
+</div>
+
+{% endblock %}

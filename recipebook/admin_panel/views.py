@@ -1,9 +1,13 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
 from django.views.generic import TemplateView
+from django.contrib import messages
+from django.urls import reverse
 
 from users.models import BotUser
 from admin_panel.models import Recipe
+from admin_panel.forms import RecipeForm
 
 
 def homeview(request):
@@ -26,3 +30,41 @@ class RecipesList(TemplateView):
         context = super().get_context_data(**kwargs)
         context['recipes'] = Recipe.objects.all()
         return context
+
+
+class NewRecipe(View):
+    form_class = RecipeForm
+    template_name = 'admin_panel/recipe_template.html'
+
+    def get(self, request):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form, 'button_text': 'Add Recipe'})
+
+    def post(self, request):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "New recipe added!")
+            return redirect(reverse('recipes'))
+        return render(request, self.template_name, {'form': form})
+
+
+class EditRecipe(View):
+    form_class = RecipeForm
+    template_name = 'admin_panel/recipe_template.html'
+
+    def get(self, request, recipe_id):
+        recipe = get_object_or_404(Recipe, pk=recipe_id)
+        form = self.form_class(instance=recipe)
+        return render(request, self.template_name, {'form': form, 'button_text': 'Save Changes'})
+
+    def post(self, request, recipe_id):
+        recipe = get_object_or_404(Recipe, pk=recipe_id)
+        form = self.form_class(request.POST, request.FILES, instance=recipe)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Changes saved!")
+            return redirect(reverse('recipes'))
+        return render(request, self.template_name, {'form': form})
+
+

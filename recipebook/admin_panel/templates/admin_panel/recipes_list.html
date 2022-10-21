@@ -3,14 +3,20 @@
 <div class="container">
   <a href="{% url 'home-view' %}" class="btn btn-outline-dark">Back</a>
   <h3 class="text-center">Recipes</h3>
+    <div class="d-grid gap-2">
+      <a href="{% url 'new-recipe' %}" class="btn btn-outline-dark">Add new recipe</a>
+    </div>
     <ul class="list-group">
       {% for recipe in recipes %}
         <li class="list-group-item">
           <h5 сlass="text-center">{{ recipe.name }}</h5>
           <p>{{ recipe.text }}</p>
           {% if recipe.photo %}
-            <img src="{{ recipe.photo_url }}" width="240" alt="recipe_image">
+            <img class="mx-auto d-block" src="{{ recipe.photo_url }}" width="240" alt="recipe_image">
+          <br>
           {% endif %}
+          <a href="{% url 'edit-recipe' recipe_id=recipe.pk %}" class="btn btn-outline-dark">Edit</a>
+          <a href="#" class="btn btn-danger">Delete</a>
         </li>
       {% endfor %}
     </ul>
