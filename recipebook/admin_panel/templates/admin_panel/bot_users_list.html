@@ -2,10 +2,12 @@
 {% block body %}
 <div class="container">
   <a href="{% url 'home-view' %}" class="btn btn-outline-dark">Back</a>
-  <h4>Bot Users:</h4>
+  <br>
+  <br>
+  <h3>Bot Users:</h3>
     <ul class="list-group">
       {% for user in bot_users %}
-        <li class="list-group-item">
+        <li class="list-group-item" style="width: 40rem;">
           <p><small>Username: </small><strong>{{ user.username }}</strong></p>
           <p><small>Telegram ID: </small><strong>{{ user.tg_id }}</strong></p>
           <p><small>First name: </small><strong>{{ user.first_name }}</strong></p>
