@@ -4,6 +4,7 @@ from django.views import View
 from django.views.generic import TemplateView
 from django.contrib import messages
 from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from users.models import BotUser
 from admin_panel.models import Recipe
@@ -14,8 +15,8 @@ def homeview(request):
     return render(request, 'admin_panel/admin_panel_home.html')
 
 
-class BotUsersList(TemplateView):
-    template_name = 'admin_panel/bot_users_list.html'
+class BotUsersList(LoginRequiredMixin, TemplateView):
+    template_name = 'admin_panel/bot_users_table.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -23,7 +24,7 @@ class BotUsersList(TemplateView):
         return context
 
 
-class RecipesList(TemplateView):
+class RecipesList(LoginRequiredMixin, TemplateView):
     template_name = 'admin_panel/recipes_list.html'
 
     def get_context_data(self, **kwargs):
@@ -32,7 +33,7 @@ class RecipesList(TemplateView):
         return context
 
 
-class NewRecipe(View):
+class NewRecipe(LoginRequiredMixin, View):
     form_class = RecipeForm
     template_name = 'admin_panel/recipe_template.html'
 
@@ -49,7 +50,7 @@ class NewRecipe(View):
         return render(request, self.template_name, {'form': form})
 
 
-class EditRecipe(View):
+class EditRecipe(LoginRequiredMixin, View):
     form_class = RecipeForm
     template_name = 'admin_panel/recipe_template.html'
 
@@ -68,7 +69,7 @@ class EditRecipe(View):
         return render(request, self.template_name, {'form': form})
 
 
-class DeleteRecipe(View):
+class DeleteRecipe(LoginRequiredMixin, View):
 
     def post(self, request, recipe_id):
         recipe = get_object_or_404(Recipe, pk=recipe_id)
