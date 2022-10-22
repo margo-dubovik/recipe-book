@@ -1,15 +1,11 @@
 from django.core.management.base import BaseCommand
-from telebot import TeleBot, types
+from telebot import TeleBot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from django.shortcuts import get_object_or_404
 from tgbot.models import BotUser, Recipe
 
 from urllib.request import urlopen
 from io import BytesIO
-
-import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 import os
 from dotenv import load_dotenv
@@ -186,17 +182,9 @@ def recipe_callback(call):
                      text=recipe.text)
 
 
-@csrf_exempt
-def webhook(request):
-    print(request.body.decode('utf-8'))
-    update = types.Update.de_json(json.loads(request.body.decode('utf-8')))
-    bot.process_new_updates([update])
-    return JsonResponse({'message': 'OK'}, status=200)
-
-
 class Command(BaseCommand):
     help = 'Recipe Bot'
 
     def handle(self, *args, **kwargs):
         # bot.infinity_polling()
-        bot.set_webhook(url=f"https://recipebook-margodubovik.herokuapp.com/telegram_webhook/")
+        bot.set_webhook(url=f"https://recipebook-margodubovik.herokuapp.com/tgbot/telegram-webhook/")
