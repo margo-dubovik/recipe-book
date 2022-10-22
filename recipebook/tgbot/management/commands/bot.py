@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-import telebot
+from telebot import TeleBot, types
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import os
 from dotenv import load_dotenv
 
@@ -9,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from users.models import BotUser
 
 TOKEN = os.environ.get('TELEGRAM_API_TOKEN')
-bot = telebot.TeleBot(TOKEN)
+bot = TeleBot(TOKEN)
 
 states = {
     "WAIT_FOR_NAME": 0,
@@ -36,7 +37,8 @@ def set_state(user_id, state):
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, """\
-    Hi there, I am RecipeBot. Enter your name, please.
+    Вітаю! Я -- Книжка рецептів. Давайте познайомимось.
+    Введіть, будь ласка, своє ім'я.
     """)
     if not BotUser.objects.filter(tg_id=message.from_user.id).exists():
         new_user = BotUser(
@@ -47,15 +49,64 @@ def send_welcome(message):
             state=states["WAIT_FOR_NAME"],
         )
         new_user.save()
+    else:
+        user = BotUser.objects.get(tg_id=message.from_user.id)
+        if user.state == states['MAIN_MENU']:
+            bot.send_message(message.chat.id, f"Вітаю, {user.chosen_name}. Головне меню")
+        elif user.state == states['RECIPES_MENU']:
+            bot.send_message(message.chat.id, f"Вітаю, {user.chosen_name}. Меню рецептів")
+        elif user.state == states['WAIT_FOR_GENDER']:
+            bot.send_message(message.chat.id,
+                             text=f"Приємно познайомитись, {message.text}! Будь ласка, оберіть свою стать:",
+                             reply_markup=gender_markup())
+        elif user.state == states['WAIT_FOR_NAME']:
+            bot.send_message(message.chat.id, f"Вітаю! Введіть, будь ласка, своє ім'я.")
 
 
-# Handle all other messages with content_type 'text' (content_types defaults to ['text'])
+
+def gender_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    markup.add(InlineKeyboardButton('Жіноча', callback_data='f'),
+               InlineKeyboardButton('Чоловіча', callback_data='m'),
+               InlineKeyboardButton('Інша', callback_data='o'),
+               )
+    return markup
+
+
+def main_menu_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    markup.add(InlineKeyboardButton('Про мене', callback_data='about_me'),
+               InlineKeyboardButton('Рецепти', callback_data='recipes'),
+               )
+    return markup
+
+
+# Handle user inserting their name
 @bot.message_handler(func=lambda message: get_current_state(message.from_user.id) == states["WAIT_FOR_NAME"])
 def user_enters_name(message):
-    global inserted_info
-    inserted_info['name'] = message.text
-    bot.send_message(message.chat.id, "Nice to meet you! And what is your gender?")
-    set_state(message.from_user.id, states['WAIT_FOR_GENDER'])
+    user_id = message.from_user.id
+    user = get_object_or_404(BotUser, tg_id=user_id)
+    user.name = message.text
+    user.save()
+
+    bot.send_message(message.chat.id, text=f"Приємно познайомитись, {message.text}! Будь ласка, оберіть свою стать:",
+                     reply_markup=gender_markup())
+    set_state(user_id, states['WAIT_FOR_GENDER'])
+
+
+# Handle user inserting gender
+@bot.callback_query_handler(func=lambda call: call.data in ['m', 'f', 'o'])
+def callback_query(call):
+    user_id = call.message.chat.id
+    user = get_object_or_404(BotUser, tg_id=user_id)
+    user.gender = call.data
+    user.save()
+    bot.send_message(chat_id=call.message.chat.id, text='Дякую!')
+    bot.send_message(chat_id=call.message.chat.id, text=f"Головне меню:",
+                     reply_markup=main_menu_markup())
+    set_state(user_id, states['MAIN_MENU'])
 
 
 class Command(BaseCommand):
