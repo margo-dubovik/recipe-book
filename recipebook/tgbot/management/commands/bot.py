@@ -174,7 +174,7 @@ def recipe_callback(call):
     recipe_pk = call.data[7:]
     recipe = get_object_or_404(Recipe, pk=recipe_pk)
     if recipe.photo:
-        host_url = "http://localhost:8000"
+        host_url = "https://recipebook-margodubovik.herokuapp.com"
         photo_url = host_url + recipe.photo_url
         bot.send_photo(chat_id=call.message.chat.id,
                        photo=BytesIO(urlopen(photo_url).read()))
