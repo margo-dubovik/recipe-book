@@ -52,7 +52,8 @@ def send_welcome(message):
     else:
         user = BotUser.objects.get(tg_id=message.from_user.id)
         if user.state == states['MAIN_MENU']:
-            bot.send_message(message.chat.id, f"Вітаю, {user.chosen_name}. Головне меню")
+            bot.send_message(message.chat.id, f"Вітаю, {user.chosen_name}. Головне меню",
+                             reply_markup=main_menu_markup())
         elif user.state == states['RECIPES_MENU']:
             bot.send_message(message.chat.id, f"Вітаю, {user.chosen_name}. Меню рецептів")
         elif user.state == states['WAIT_FOR_GENDER']:
@@ -61,7 +62,6 @@ def send_welcome(message):
                              reply_markup=gender_markup())
         elif user.state == states['WAIT_FOR_NAME']:
             bot.send_message(message.chat.id, f"Вітаю! Введіть, будь ласка, своє ім'я.")
-
 
 
 def gender_markup():
@@ -88,7 +88,7 @@ def main_menu_markup():
 def user_enters_name(message):
     user_id = message.from_user.id
     user = get_object_or_404(BotUser, tg_id=user_id)
-    user.name = message.text
+    user.chosen_name = message.text
     user.save()
 
     bot.send_message(message.chat.id, text=f"Приємно познайомитись, {message.text}! Будь ласка, оберіть свою стать:",
@@ -98,7 +98,7 @@ def user_enters_name(message):
 
 # Handle user inserting gender
 @bot.callback_query_handler(func=lambda call: call.data in ['m', 'f', 'o'])
-def callback_query(call):
+def gender_callback(call):
     user_id = call.message.chat.id
     user = get_object_or_404(BotUser, tg_id=user_id)
     user.gender = call.data
@@ -108,6 +108,20 @@ def callback_query(call):
                      reply_markup=main_menu_markup())
     set_state(user_id, states['MAIN_MENU'])
 
+
+# Handle main menu choice
+@bot.callback_query_handler(func=lambda call: call.data in ['about_me', 'recipes'])
+def main_menu_callback(call):
+    user_id = call.message.chat.id
+    user = get_object_or_404(BotUser, tg_id=user_id)
+    if call.data == 'about_me':
+        bot.send_message(chat_id=call.message.chat.id,
+                         text=f"Ім'я: {user.chosen_name},\nСтать: {user.gender_verbose}")
+        bot.send_message(chat_id=call.message.chat.id, text=f"Головне меню:",
+                         reply_markup=main_menu_markup())
+    else:
+        bot.send_message(chat_id=call.message.chat.id,
+                         text=f"Це я поки не вмію")
 
 class Command(BaseCommand):
     help = 'Recipe Bot'

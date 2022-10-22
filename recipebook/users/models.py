@@ -18,9 +18,9 @@ class BotUser(models.Model):
     state = models.IntegerField()
 
     gender_choices = (
-        ('f', 'Female'),
-        ('m', 'Male'),
-        ('o', 'Other'),
+        ('f', 'Жіноча'),
+        ('m', 'Чоловіча'),
+        ('o', 'Інша'),
     )
 
     gender = models.CharField(max_length=1, choices=gender_choices)
@@ -28,5 +28,6 @@ class BotUser(models.Model):
     def __str__(self):
         return self.username
 
+    @property
     def gender_verbose(self):
         return dict(BotUser.gender_choices)[self.gender]
