@@ -18,7 +18,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'users.BotAdmin'
+AUTH_USER_MODEL = 'admin_panel.BotAdmin'
 
 # Application definition
 
@@ -30,9 +30,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'users',
-    'admin_panel',
     'tgbot',
+    'admin_panel',
 ]
 
 MIDDLEWARE = [

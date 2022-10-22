@@ -6,9 +6,9 @@ from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from users.models import BotUser
-from admin_panel.models import Recipe
-from admin_panel.forms import RecipeForm
+from tgbot.models import BotUser
+from tgbot.models import Recipe
+from tgbot.forms import RecipeForm
 
 
 def homeview(request):

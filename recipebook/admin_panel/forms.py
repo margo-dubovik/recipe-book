@@ -1,12 +1,15 @@
-from django import forms
-from django.forms import ModelForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
-from admin_panel.models import Recipe
+from .models import BotAdmin
 
 
-class RecipeForm(ModelForm):
-    photo = forms.ImageField(label='Select a photo', required=False)
-
+class BotAdminCreationForm(UserCreationForm):
     class Meta:
-        model = Recipe
-        fields = ("name", "text", "photo",)
+        model = BotAdmin
+        fields = ("username", "email", )
+
+
+class BotAdminChangeForm(UserChangeForm):
+    class Meta:
+        model = BotAdmin
+        fields = ("username", "email", )

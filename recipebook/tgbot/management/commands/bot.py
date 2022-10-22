@@ -1,14 +1,13 @@
 from django.core.management.base import BaseCommand
 from telebot import TeleBot, types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from django.shortcuts import get_object_or_404
+from tgbot.models import BotUser, Recipe
+
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
-from django.shortcuts import get_object_or_404
-from users.models import BotUser
-from admin_panel.models import Recipe
 
 TOKEN = os.environ.get('TELEGRAM_API_TOKEN')
 bot = TeleBot(TOKEN)
@@ -172,7 +171,6 @@ def recipe_callback(call):
     recipe_pk = call.data[7:]
     recipe = get_object_or_404(Recipe, pk=recipe_pk)
     if recipe.photo:
-        # recipe_photo = open(recipe.photo_url, 'rb')
         bot.send_photo(chat_id=call.message.chat.id,
                        photo=recipe.photo_url)
     else:

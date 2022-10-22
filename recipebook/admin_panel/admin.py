@@ -1,4 +1,16 @@
 from django.contrib import admin
-from .models import Recipe
+from django.contrib.auth.admin import UserAdmin
 
-admin.site.register(Recipe)
+from .models import BotAdmin
+from .forms import BotAdminCreationForm, BotAdminChangeForm
+
+
+class BotAdminAdmin(UserAdmin):
+    add_form = BotAdminCreationForm
+    form = BotAdminChangeForm
+    model = BotAdmin
+    list_display = ["username", "email", ]
+    search_fields = ('username', "email",)
+
+
+admin.site.register(BotAdmin, BotAdminAdmin)
