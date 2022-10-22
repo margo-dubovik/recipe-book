@@ -8,6 +8,7 @@ load_dotenv()
 
 from django.shortcuts import get_object_or_404
 from users.models import BotUser
+from admin_panel.models import Recipe
 
 TOKEN = os.environ.get('TELEGRAM_API_TOKEN')
 bot = TeleBot(TOKEN)
@@ -33,14 +34,14 @@ def set_state(user_id, state):
     user.save()
 
 
-# Handle '/start' and '/help'
+# Handle '/start'
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, """\
-    Вітаю! Я -- Книжка рецептів. Давайте познайомимось.
-    Введіть, будь ласка, своє ім'я.
-    """)
     if not BotUser.objects.filter(tg_id=message.from_user.id).exists():
+        bot.reply_to(message, """\
+            Вітаю! Я -- Книжка рецептів. Давайте познайомимось.\
+            Введіть, будь ласка, своє ім'я.
+            """)
         new_user = BotUser(
             tg_id=message.from_user.id,
             username=message.from_user.username,
@@ -55,13 +56,30 @@ def send_welcome(message):
             bot.send_message(message.chat.id, f"Вітаю, {user.chosen_name}. Головне меню",
                              reply_markup=main_menu_markup())
         elif user.state == states['RECIPES_MENU']:
-            bot.send_message(message.chat.id, f"Вітаю, {user.chosen_name}. Меню рецептів")
+            bot.send_message(message.chat.id, text=f"Вітаю, {user.chosen_name}. Рецепти:",
+                             reply_markup=recipes_markup())
         elif user.state == states['WAIT_FOR_GENDER']:
             bot.send_message(message.chat.id,
                              text=f"Приємно познайомитись, {message.text}! Будь ласка, оберіть свою стать:",
                              reply_markup=gender_markup())
         elif user.state == states['WAIT_FOR_NAME']:
             bot.send_message(message.chat.id, f"Вітаю! Введіть, будь ласка, своє ім'я.")
+
+
+# Handle '/menu'
+@bot.message_handler(commands=['menu'])
+def send_menu(message):
+    bot.send_message(message.chat.id, f"Головне меню",
+                     reply_markup=main_menu_markup())
+    set_state(message.from_user.id, states['MAIN_MENU'])
+
+
+# Handle '/recipes'
+@bot.message_handler(commands=['recipes'])
+def send_recipes(message):
+    bot.send_message(message.chat.id, f"Рецепти:",
+                     reply_markup=recipes_markup())
+    set_state(message.from_user.id, states['RECIPES_MENU'])
 
 
 def gender_markup():
@@ -80,6 +98,15 @@ def main_menu_markup():
     markup.add(InlineKeyboardButton('Про мене', callback_data='about_me'),
                InlineKeyboardButton('Рецепти', callback_data='recipes'),
                )
+    return markup
+
+
+def recipes_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    recipes = Recipe.objects.all()
+    for recipe in recipes:
+        markup.add(InlineKeyboardButton(recipe.name, callback_data=f"recipe_{recipe.pk}"))
     return markup
 
 
@@ -117,11 +144,25 @@ def main_menu_callback(call):
     if call.data == 'about_me':
         bot.send_message(chat_id=call.message.chat.id,
                          text=f"Ім'я: {user.chosen_name},\nСтать: {user.gender_verbose}")
-        bot.send_message(chat_id=call.message.chat.id, text=f"Головне меню:",
-                         reply_markup=main_menu_markup())
     else:
         bot.send_message(chat_id=call.message.chat.id,
-                         text=f"Це я поки не вмію")
+                         text=f"Рецепти:", reply_markup=recipes_markup())
+        set_state(user_id, states['RECIPES_MENU'])
+
+
+# Handle recipe choice
+@bot.callback_query_handler(func=lambda call: call.data.startswith('recipe_'))
+def recipe_callback(call):
+    recipe_pk = call.data[7:]
+    recipe = get_object_or_404(Recipe, pk=recipe_pk)
+    if recipe.photo:
+        # recipe_photo = open(recipe.photo_url, 'rb')
+        bot.send_photo(chat_id=call.message.chat.id,
+                       photo=recipe.photo_url)
+    else:
+        bot.send_message(chat_id=call.message.chat.id,
+                         text=recipe.text)
+
 
 class Command(BaseCommand):
     help = 'Recipe Bot'
