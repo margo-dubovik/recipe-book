@@ -18,6 +18,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', 'recipebook-margodubovik.herokuapp.com']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://recipebook-margodubovik.herokuapp.com'
+]
+
 AUTH_USER_MODEL = 'admin_panel.BotAdmin'
 
 # Application definition
