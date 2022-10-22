@@ -32,6 +32,7 @@ INSTALLED_APPS = [
 
     'users',
     'admin_panel',
+    'tgbot',
 ]
 
 MIDDLEWARE = [
