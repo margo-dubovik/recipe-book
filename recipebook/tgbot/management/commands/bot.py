@@ -180,7 +180,7 @@ def recipe_callback(call):
         bot.send_photo(chat_id=call.message.chat.id,
                        photo=BytesIO(urlopen(photo_url).read()))
     bot.send_message(chat_id=call.message.chat.id,
-                     text=f"*{recipe.name}*\n{recipe.text}")
+                     text=f"*{recipe.name}*\n{recipe.text}", parse_mode='markdown')
 
 
 class Command(BaseCommand):
