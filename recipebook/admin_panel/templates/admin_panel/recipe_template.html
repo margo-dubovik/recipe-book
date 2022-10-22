@@ -5,7 +5,7 @@
     <form method="post" enctype='multipart/form-data'>
         {% csrf_token %}
         {{ form.as_p }}
-        <button class="btn btn-outline-dark" type="submit">{{ button_text }}</button>
+        <button class="btn btn-dark" type="submit">{{ button_text }}</button>
     </form>
     {% endif %}
 </div>
