@@ -34,6 +34,34 @@ def set_state(user_id, state):
     user.save()
 
 
+def gender_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    markup.add(InlineKeyboardButton('Жіноча', callback_data='f'),
+               InlineKeyboardButton('Чоловіча', callback_data='m'),
+               InlineKeyboardButton('Інша', callback_data='o'),
+               )
+    return markup
+
+
+def main_menu_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    markup.add(InlineKeyboardButton('Про мене', callback_data='about_me'),
+               InlineKeyboardButton('Рецепти', callback_data='recipes'),
+               )
+    return markup
+
+
+def recipes_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    recipes = Recipe.objects.all()
+    for recipe in recipes:
+        markup.add(InlineKeyboardButton(recipe.name, callback_data=f"recipe_{recipe.pk}"))
+    return markup
+
+
 # Handle '/start'
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -69,45 +97,33 @@ def send_welcome(message):
 # Handle '/menu'
 @bot.message_handler(commands=['menu'])
 def send_menu(message):
-    bot.send_message(message.chat.id, f"Головне меню",
-                     reply_markup=main_menu_markup())
-    set_state(message.from_user.id, states['MAIN_MENU'])
+    user = BotUser.objects.get(tg_id=message.from_user.id)
+    if user.state == states['WAIT_FOR_GENDER']:
+        bot.send_message(message.chat.id,
+                         text=f"Щоб побачити головне меню, оберіть, будь ласка, свою стать:",
+                         reply_markup=gender_markup())
+    elif user.state == states['WAIT_FOR_NAME']:
+        bot.send_message(message.chat.id, f"Щоб побачити головне меню, введіть, будь ласка, своє ім'я.")
+    else:
+        bot.send_message(message.chat.id, f"Головне меню",
+                         reply_markup=main_menu_markup())
+        set_state(message.from_user.id, states['MAIN_MENU'])
 
 
 # Handle '/recipes'
 @bot.message_handler(commands=['recipes'])
 def send_recipes(message):
-    bot.send_message(message.chat.id, f"Рецепти:",
-                     reply_markup=recipes_markup())
-    set_state(message.from_user.id, states['RECIPES_MENU'])
-
-
-def gender_markup():
-    markup = InlineKeyboardMarkup()
-    markup.row_width = 1
-    markup.add(InlineKeyboardButton('Жіноча', callback_data='f'),
-               InlineKeyboardButton('Чоловіча', callback_data='m'),
-               InlineKeyboardButton('Інша', callback_data='o'),
-               )
-    return markup
-
-
-def main_menu_markup():
-    markup = InlineKeyboardMarkup()
-    markup.row_width = 1
-    markup.add(InlineKeyboardButton('Про мене', callback_data='about_me'),
-               InlineKeyboardButton('Рецепти', callback_data='recipes'),
-               )
-    return markup
-
-
-def recipes_markup():
-    markup = InlineKeyboardMarkup()
-    markup.row_width = 1
-    recipes = Recipe.objects.all()
-    for recipe in recipes:
-        markup.add(InlineKeyboardButton(recipe.name, callback_data=f"recipe_{recipe.pk}"))
-    return markup
+    user = BotUser.objects.get(tg_id=message.from_user.id)
+    if user.state == states['WAIT_FOR_GENDER']:
+        bot.send_message(message.chat.id,
+                         text=f"Щоб побачити рецепти, оберіть, будь ласка, свою стать:",
+                         reply_markup=gender_markup())
+    elif user.state == states['WAIT_FOR_NAME']:
+        bot.send_message(message.chat.id, f"Щоб побачити рецепти, введіть, будь ласка, своє ім'я.")
+    else:
+        bot.send_message(message.chat.id, f"Рецепти:",
+                         reply_markup=recipes_markup())
+        set_state(message.from_user.id, states['RECIPES_MENU'])
 
 
 # Handle user inserting their name
