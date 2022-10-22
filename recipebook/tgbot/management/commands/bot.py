@@ -4,6 +4,9 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from django.shortcuts import get_object_or_404
 from tgbot.models import BotUser, Recipe
 
+from urllib.request import urlopen
+from io import BytesIO
+
 import os
 from dotenv import load_dotenv
 
@@ -171,11 +174,12 @@ def recipe_callback(call):
     recipe_pk = call.data[7:]
     recipe = get_object_or_404(Recipe, pk=recipe_pk)
     if recipe.photo:
+        host_url = "http://localhost:8000"
+        photo_url = host_url + recipe.photo_url
         bot.send_photo(chat_id=call.message.chat.id,
-                       photo=recipe.photo_url)
-    else:
-        bot.send_message(chat_id=call.message.chat.id,
-                         text=recipe.text)
+                       photo=BytesIO(urlopen(photo_url).read()))
+    bot.send_message(chat_id=call.message.chat.id,
+                     text=recipe.text)
 
 
 class Command(BaseCommand):

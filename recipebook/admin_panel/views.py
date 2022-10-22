@@ -78,6 +78,3 @@ class DeleteRecipe(LoginRequiredMixin, View):
         recipe.delete()
         messages.success(request, "Recipe is deleted")
         return redirect(reverse('recipes'))
-
-
-
