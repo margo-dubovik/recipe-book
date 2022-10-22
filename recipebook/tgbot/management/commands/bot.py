@@ -186,5 +186,4 @@ class Command(BaseCommand):
     help = 'Recipe Bot'
 
     def handle(self, *args, **kwargs):
-        # bot.infinity_polling()
         bot.set_webhook(url=f"https://recipebook-margodubovik.herokuapp.com/tgbot/telegram-webhook/")
