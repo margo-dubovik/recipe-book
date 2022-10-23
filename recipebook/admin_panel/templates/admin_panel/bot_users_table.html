@@ -1,0 +1,35 @@
+{% extends 'admin_panel/base.html' %}
+{% block body %}
+<div class="container">
+    <a href="{% url 'home-view' %}" class="btn btn-dark">Back</a>
+    <br>
+    <br>
+    <h3 class="text-center">Bot Users</h3>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Username</th>
+            <th scope="col">Telegram ID</th>
+            <th scope="col">Chosen Name</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Gender</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in bot_users %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ user.username }}</td>
+            <td>{{ user.tg_id }}></td>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.chosen_name }}</td>
+            <td>{{ user.gender_verbose }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

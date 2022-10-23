@@ -1,0 +1,32 @@
+{% extends 'admin_panel/base.html' %}
+{% block body %}
+<div class="container">
+  <a href="{% url 'home-view' %}" class="btn btn-dark">Back</a>
+  <h3 class="text-center">Recipes</h3>
+    <div class="d-grid gap-2">
+      <a href="{% url 'new-recipe' %}" class="btn btn-dark">Add new recipe</a>
+    </div>
+    <ul class="list-group">
+      {% for recipe in recipes %}
+        <li class="list-group-item">
+          <h5 сlass="text-center">{{ recipe.name }}</h5>
+          <p>{{ recipe.text }}</p>
+          {% if recipe.photo %}
+            <img class="mx-auto d-block" src="{{ recipe.photo_url }}" width="520" alt="recipe_image">
+          <br>
+          {% endif %}
+          <a href="{% url 'edit-recipe' recipe_id=recipe.pk %}" class="btn btn-dark">Edit</a>
+          <div class="float-end">
+                <form method="POST" action="{% url 'delete-recipe' recipe_id=recipe.pk %}">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit"
+                            onclick="return confirm('Are you sure you want to delete this recipe?');">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </li>
+      {% endfor %}
+    </ul>
+</div>
+{% endblock %}
