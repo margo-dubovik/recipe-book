@@ -1,10 +1,17 @@
 {% extends 'admin_panel/base.html' %}
+
+{% load crispy_forms_tags %}
+
 {% block body %}
+<div class="container">
+    <a href="{% url 'recipes' %}" class="btn btn-dark">Back</a>
+</div>
+<br>
 <div class="container">
     {% if form %}
     <form method="post" enctype='multipart/form-data'>
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form|crispy }}
         <button class="btn btn-dark" type="submit">{{ button_text }}</button>
     </form>
     {% endif %}

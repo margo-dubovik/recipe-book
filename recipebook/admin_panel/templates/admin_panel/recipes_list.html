@@ -12,7 +12,7 @@
           <h5 сlass="text-center">{{ recipe.name }}</h5>
           <p>{{ recipe.text }}</p>
           {% if recipe.photo %}
-            <img class="mx-auto d-block" src="{{ recipe.photo_url }}" width="240" alt="recipe_image">
+            <img class="mx-auto d-block" src="{{ recipe.photo_url }}" width="520" alt="recipe_image">
           <br>
           {% endif %}
           <a href="{% url 'edit-recipe' recipe_id=recipe.pk %}" class="btn btn-dark">Edit</a>
